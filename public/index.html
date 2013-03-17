@@ -1,0 +1,184 @@
+<html>
+  <head>
+    <title>REST-DNS Project</title>
+  </head>
+
+  <body>
+    <h1>
+      REST-DNS Project
+    </h1>
+
+    <p>
+      REST-DNS is a project for web developers those who need to get DNS
+      information but cannot create raw requests.
+      The platform we target on is Web-Browser Extensions 
+      (such as Firefox Extensions, Chrome Extensions), Google App Engine,
+      and so on.  On such application platform, you can create HTTP request
+      but cannot create DNS request by yourself.
+      This is very useful for Javascript users.
+      We provide simple interface based on REST architecture, that answers
+      DNS request, so that you can use DNS information for your applications.
+      You may also get DNSSEC RRs from REST-DNS if you want; 
+      We don't provide you the information whether the RR is 
+      verified or not.
+    </p>
+
+    <div>
+      <h2>Easy Interface:</h2>
+      <ul>
+	<li><b>GET http://restdns.net/<i>&lt;host name&gt;</i> </b>
+	  to simply get resolved IP address list.  When error: returns nothing
+	</li>
+
+	<li><b>GET http://restdns.net/<i>&lt;host name&gt;</i>/v4 </b>
+	  to simply get one single IPv4 address.  When error: returns 0.0.0.0
+	</li>
+
+	<li><b>GET http://restdns.net/<i>&lt;host name&gt;</i>/v6 </b>
+	  to simply get one single IPv6 address.  When error: returns ::
+	</li>
+
+      </ul>
+    </div>
+
+    <div>
+      <h2>JSON Interface:</h2>
+      <ul>
+	<li><b>GET http://restdns.net/<i>&lt;host name&gt;</i>/a/ </b>
+	  to get IPv4 address list.
+	</li>
+
+	<li><b>GET http://restdns.net/<i>&lt;ip address&gt;</i>/x/ </b>
+	  to get reverse lookup.
+	</li>
+
+	<li><b>GET http://restdns.net/<i>&lt;host name&gt;</i>/aaaa/ </b>
+	  to get IPv6 address
+	</li>
+
+	<li><b>GET http://restdns.net/<i>&lt;host name&gt;</i>/mx/ </b>
+	  to get MX record
+	</li>
+
+	<li><b>GET http://restdns.net/<i>&lt;host name&gt;</i>/txt/ </b>
+	  to get TXT record
+	</li>
+
+	<li><b>GET http://restdns.net/<i>&lt;host name&gt;</i>/dnskey/ </b>
+	  to get DNSKEY record
+	</li>
+
+	<li><b>GET http://restdns.net/<i>&lt;host name&gt;</i>/rrsig/ </b>
+	  to get RRSIG record
+	</li>
+
+	<li><b>GET http://restdns.net/<i>&lt;host name&gt;</i>/ds/ </b>
+	  to get DS record
+	</li>
+
+	<li>DELETE http://restdns.net/<i>&lt;host name&gt;</i>/
+	  to delete cached data for the host.  (NOT IMPLEMENTED YET)
+	</li>
+
+      </ul>
+    </div>
+
+    <div>
+      <h2>More Informations:</h2>
+      <h3>Examples</h3>
+      Try access at <a href="http://restdns.net/example.org/">http://restdns.net/example.org/</a>. 
+      It will show you of the IP address bound to example.org. <br>
+      Then try access at <a href="http://restdns.net/example.org/aaaa/">http://restdns.net/example.org/aaaa/</a>
+      which shows you the IPv6 address bound to example.org, in a JSON style.<br>
+      For other types of DNS record, such as MX, TEXT, NS, SOA, it's all the same.
+
+      <h3>How to read JSON response</h3>
+      Here I show an example of the returning JSON data.<br>
+      <pre>
+	{
+	  "A": [
+	    "192.0.32.10"
+	  ],
+	  "AAAA": [
+	    "2620:0:2D0:200::10"
+	  ],
+	  "SOA": [
+	    {
+	      "serial": 2010073621,
+	      "retry": 3600,
+	      "mname": "dns1.icann.org",
+	      "refresh": 7200,
+	      "minimum": 3600,
+	      "rname": "",
+	      "expire": 1209600
+	    },
+	    {
+	      "serial": 2010073621,
+	      "retry": 3600,
+	      "mname": "dns1.icann.org",
+	      "refresh": 7200,
+	      "minimum": 3600,
+	      "rname": "",
+	      "expire": 1209600
+	    }
+	  ],
+	  "hostname": "example.org"
+	}
+      </pre>
+      We provide DNS records with dictionary records. For each types of records, the records will be given in a list.
+      Each element of the list is either a dictionary or a simple string.
+      For A, AAAA, MX, NS, TEXT, the element will be a simple string.
+      For MX, SOA, the element will be a dictionary. <br>
+      If you want to get serial of SOA, access will be something like:
+      <pre>
+	#!ruby
+	require 'net/http'
+	require 'json'
+
+	res = Net::HTTP.get('restdns.net', '/example.org/soa')
+	rd = JSON.parse(res)
+	rd["SOA"][0]["serial"]
+      </pre>
+
+      <h3>Restrictions</h3>
+      We do provide SOA requests, but we do not provide RNAME property, due to spam mail problems.
+      <span style="font-size: 5px"> * honeypot * </span><br>
+      We provide NS records, but not ready for providing glue records yet.  If you need it, please ask again.
+    </div>
+
+    <div>
+      <h2>Mailing List:</h2>
+      We will be providing announcements via mailing list.
+      The announcements should be:
+      <ul>
+	<li>Server Down Time Announcement</li>
+	<li>New/Obsolete API Announcement</li>
+	<li>System Updates (Which may cause unstability)</li>
+      </ul>
+      and so on. <br>
+      To join our mailing list, please contact suu-g <rest-adm@restdns.net>.
+    </div>
+
+    <div>
+      <h2>Contact:</h2>
+      please contact: rest-adm@restdns.net .
+    </div>
+
+    <div>
+      <h2>Source Code</h2>
+      <a href="sources/restdns-0.3.tar.gz">Version 0.31</a> <br />
+      <a href="sources/restdns-0.2.tar.gz">Version 0.2</a>  <br />
+      This source code is licensed as MIT License. Please read LICENSE file for more information.
+    </div>
+
+    <div>
+    </div>
+
+    <div align="right">
+      <hr />
+      Copyright (c) 2010-2013 suu-g <rest-adm@restdns.net> all rights reserved.
+    </div>
+
+  </body>
+</html>
+

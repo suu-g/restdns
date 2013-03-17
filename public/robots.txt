@@ -1,0 +1,6 @@
+User-agent: *
+Disallow: */v4
+Disallow: */v6
+Disallow: config.ru
+Disallow: restdns.rb
+

@@ -1,0 +1,7 @@
+---
+:orm: none
+:test: rspec
+:mock: mocha
+:script: none
+:renderer: slim
+:stylesheet: none
